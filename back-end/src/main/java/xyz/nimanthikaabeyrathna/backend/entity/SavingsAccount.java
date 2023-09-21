@@ -1,8 +1,21 @@
 package xyz.nimanthikaabeyrathna.backend.entity;
 
-public class SavingsAccount extends Account{
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-    private double interestRate;
-    private double withdrawalLimit;
+import java.math.BigDecimal;
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
+public class SavingsAccount implements SuperEntity{
+
+    private Long id;
+    private BigDecimal interestRate;
+    private BigDecimal withdrawalLimit;
+    private Long accountId;
 
 }
