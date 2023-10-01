@@ -38,7 +38,7 @@ The Finance Management System offers the following key features:
 - back-end - spring boot
 
 
-##Design Choices
+## Design Choices
 1. Class Structure
 
     - We chose a modular class structure with separate classes for User, Account, LoanAccount, FixedDepositAccount, SavingsAccount, and Transaction.

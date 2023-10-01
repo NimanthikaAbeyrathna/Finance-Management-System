@@ -13,7 +13,9 @@ import xyz.nimanthikaabeyrathna.backend.dto.UserDTO;
 import xyz.nimanthikaabeyrathna.backend.dto.UserFinder;
 import xyz.nimanthikaabeyrathna.backend.entity.User;
 
+import java.security.MessageDigest;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 
 @Service
@@ -23,11 +25,13 @@ public class UserBOImpl implements UserBO {
     private final UserDAO userDAO;
     private final Transformer transformer;
     private final JdbcTemplate jdbcTemplate;
+    private final MessageDigest messageDigest;
 
-    public UserBOImpl(UserDAO userDAO, Transformer transformer, JdbcTemplate jdbcTemplate) {
+    public UserBOImpl(UserDAO userDAO, Transformer transformer, JdbcTemplate jdbcTemplate, MessageDigest messageDigest) {
         this.userDAO = userDAO;
         this.transformer = transformer;
         this.jdbcTemplate = jdbcTemplate;
+        this.messageDigest = messageDigest;
     }
 
     @Override
@@ -53,9 +57,16 @@ public class UserBOImpl implements UserBO {
         User savedUser = userDAO.save(user);
 
         String query = "SELECT id FROM User WHERE username = ? AND password = ?";
-        Long id = jdbcTemplate.queryForObject(query,Long.class,userDTO.getUsername(),userDTO.getPassword());
+
+        String passwordToHash = userDTO.getPassword();
+        byte[] hashedPasswordBytes = messageDigest.digest(passwordToHash.getBytes());
+        String hashedPassword = Base64.getEncoder().encodeToString(hashedPasswordBytes);
+
+        Long id = jdbcTemplate.queryForObject(query,Long.class,userDTO.getUsername(),hashedPassword);
 
         return id;
+
+
     }
 
     @Override
@@ -77,14 +88,17 @@ public class UserBOImpl implements UserBO {
     public User findUser(UserFinder userFinder) {
         String query = "SELECT * FROM User WHERE username = ? AND password = ?";
 
+        String passwordToHash = userFinder.getPassword();
+        byte[] hashedPasswordBytes = messageDigest.digest(passwordToHash.getBytes());
+        String hashedPassword = Base64.getEncoder().encodeToString(hashedPasswordBytes);
+
         try {
-            return jdbcTemplate.queryForObject(query, new Object[]{userFinder.getUsername(), userFinder.getPassword()}, (resultSet, rowNum) -> {
+            return jdbcTemplate.queryForObject(query, new Object[]{userFinder.getUsername(), hashedPassword}, (resultSet, rowNum) -> {
                 User user = new User();
-                user.setId(resultSet.getLong("id")); // Populate the ID field
+                user.setId(resultSet.getLong("id"));
                 user.setUsername(resultSet.getString("username"));
                 user.setPassword(resultSet.getString("password"));
-                user.setEmail(resultSet.getString("email")); // Populate the email field
-                // Populate other fields as needed
+                user.setEmail(resultSet.getString("email"));
 
                 return user;
             });

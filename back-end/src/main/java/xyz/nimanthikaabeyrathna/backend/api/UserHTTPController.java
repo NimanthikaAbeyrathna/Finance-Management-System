@@ -42,11 +42,9 @@ public class UserHTTPController {
         User user = userBO.findUser(userFinder);
 
         if (user != null) {
-            // User found, return the user information
             return ResponseEntity.ok(user);
         } else {
-            // User not found, return a response with an appropriate status code
-            return ResponseEntity.notFound().build(); // You can customize this response as needed
+            return ResponseEntity.notFound().build();
         }
     }
 

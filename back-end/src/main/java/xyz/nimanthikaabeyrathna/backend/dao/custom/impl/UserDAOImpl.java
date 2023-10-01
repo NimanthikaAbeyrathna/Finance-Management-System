@@ -6,19 +6,22 @@ import org.springframework.stereotype.Repository;
 import xyz.nimanthikaabeyrathna.backend.dao.custom.UserDAO;
 import xyz.nimanthikaabeyrathna.backend.entity.User;
 
+import java.security.MessageDigest;
+import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
 
-import static xyz.nimanthikaabeyrathna.backend.dao.util.Mappers.TRANSACTION_ROW_MAPPER;
 import static xyz.nimanthikaabeyrathna.backend.dao.util.Mappers.USER_ROW_MAPPER;
 
 @Repository
 public class UserDAOImpl implements UserDAO {
 
     private final JdbcTemplate jdbcTemplate;
+    private final MessageDigest messageDigest;
 
-    public UserDAOImpl(JdbcTemplate jdbcTemplate) {
+    public UserDAOImpl(JdbcTemplate jdbcTemplate, MessageDigest messageDigest) {
         this.jdbcTemplate = jdbcTemplate;
+        this.messageDigest = messageDigest;
     }
 
     @Override
@@ -28,17 +31,26 @@ public class UserDAOImpl implements UserDAO {
 
     @Override
     public User save(User entity) throws Exception {
+        String passwordToHash = entity.getPassword();
+        byte[] hashedPasswordBytes = messageDigest.digest(passwordToHash.getBytes());
+
+        String hashedPassword = Base64.getEncoder().encodeToString(hashedPasswordBytes);
+
         String sql = "INSERT INTO User (id, username, password, email) VALUES (?,?,?,?)";
-        jdbcTemplate.update(sql, entity.getId(), entity.getUsername(), entity.getPassword(), entity.getEmail());
+        jdbcTemplate.update(sql, entity.getId(), entity.getUsername(), hashedPassword, entity.getEmail());
         return entity;
     }
 
     @Override
     public void update(User entity) throws Exception {
+        String passwordToHash = entity.getPassword();
+        byte[] hashedPasswordBytes = messageDigest.digest(passwordToHash.getBytes());
+
+        String hashedPassword = Base64.getEncoder().encodeToString(hashedPasswordBytes);
 
         jdbcTemplate.update("UPDATE User SET username=?, password=?, email=? WHERE id=?",
                 entity.getUsername(),
-                entity.getPassword(),
+                hashedPassword,
                 entity.getEmail(),
                 entity.getId());
     }

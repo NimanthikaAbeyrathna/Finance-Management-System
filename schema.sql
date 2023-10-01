@@ -1,3 +1,6 @@
+CREATE DATABASE finance_management_system;
+
+
 CREATE TABLE User (
                       id BIGINT AUTO_INCREMENT PRIMARY KEY,
                       username VARCHAR(255) NOT NULL UNIQUE,
@@ -54,3 +57,4 @@ CREATE TABLE Transaction (
                              account_id BIGINT,
                              FOREIGN KEY (account_id) REFERENCES Account(id)
 );
+
