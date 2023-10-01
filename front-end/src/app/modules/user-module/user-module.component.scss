@@ -1,0 +1,45 @@
+
+.sidenav-container {
+  height: 100%;
+}
+
+.sidenav {
+  width: 200px;
+}
+
+.sidenav .mat-toolbar {
+  background: inherit;
+}
+
+.mat-toolbar.mat-primary {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+span{
+  width: 100%;
+  text-align: center;
+}
+
+.container{
+  color: black;
+  position: absolute;
+  top: 100px;
+  left: 50px;
+  width: 500px;
+  height: 400px;
+}
+input{
+  width: 100%;
+}
+#btnSignIn{
+  position: absolute;
+  right: 0;
+}
+#btnLogOut{
+  position: absolute;
+  right: 20px;
+}
+#myButton{
+  display: none;
+}

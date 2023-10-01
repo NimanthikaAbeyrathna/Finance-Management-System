@@ -1,0 +1,50 @@
+<mat-sidenav-container class="sidenav-container">
+  <mat-sidenav #drawer class="sidenav" fixedInViewport
+               [attr.role]="(isHandset$ | async) ? 'dialog' : 'navigation'"
+               [mode]="(isHandset$ | async) ? 'over' : 'side'"
+               [opened]="(isHandset$ | async) === false">
+
+
+    <mat-nav-list>
+      <a mat-list-item  routerLink="/home">Home</a>
+      <a mat-list-item routerLink="/account">Account</a>
+      <a mat-list-item routerLink="/fix-deposit-account">Fix Deposit</a>
+      <a mat-list-item routerLink="/savings-account">Savings Account</a>
+      <a mat-list-item routerLink="/loan-account">Loans</a>
+      <a mat-list-item routerLink="/transaction">Transaction</a>
+    </mat-nav-list>
+  </mat-sidenav>
+  <mat-sidenav-content>
+    <mat-toolbar color="primary">
+      <button
+        type="button"
+        aria-label="Toggle sidenav"
+        mat-icon-button
+        (click)="drawer.toggle()"
+        *ngIf="isHandset$ | async">
+        <mat-icon aria-label="Side nav toggle icon">menu</mat-icon>
+      </button>
+      <span>Savings account <button id="btnLogOut" routerLink="/">Log out</button></span>
+
+      <div class="container">
+        <h2>Savings Account Creation </h2>
+        <form (ngSubmit)="onFormSubmit($event)">
+          <label for="interestRate">Interest Rate:</label>
+          <input type="number" id="interestRate" name="interestRate" [(ngModel)]="interestRate" required
+                 step="0.00">
+          <br>
+          <label for="withdrawalLimit">Withdrawal Limit:</label>
+          <input type="number" id="withdrawalLimit" name="withdrawalLimit" [(ngModel)]="withdrawalLimit" required step="0.00">
+          <br>
+
+          <label for="accountId">Account Id:</label>
+          <input type="number" id="accountId" name="accountId" [(ngModel)]="accountId" required>
+          <br>
+          <button type="submit">Create</button>
+        </form>
+      </div>
+
+
+    </mat-toolbar>
+  </mat-sidenav-content>
+</mat-sidenav-container>
