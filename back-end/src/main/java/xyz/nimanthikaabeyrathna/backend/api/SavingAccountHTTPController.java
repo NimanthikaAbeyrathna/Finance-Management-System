@@ -28,8 +28,9 @@ public class SavingAccountHTTPController {
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping(consumes = "application/json")
-    public void saveSavingAccount(@RequestBody SavingsAccountDTO savingsAccountDTO) throws Exception {
-        savingAccountBO.saveSavingsAccount(savingsAccountDTO);
+    public Long saveSavingAccount(@RequestBody SavingsAccountDTO savingsAccountDTO) throws Exception {
+        Long generatedId =  savingAccountBO.saveSavingsAccount(savingsAccountDTO);
+        return generatedId;
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)

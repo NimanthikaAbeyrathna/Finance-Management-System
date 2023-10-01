@@ -37,6 +37,7 @@ public class Mappers {
 
                 rs.getLong("id"),
                 rs.getBigDecimal("deposit_amount"),
+                rs.getDate("create_date"),
                 rs.getDate("maturity_date"),
                 rs.getBigDecimal("interest_rate"),
                 rs.getLong("account_id")
@@ -50,6 +51,7 @@ public class Mappers {
 
                 rs.getLong("id"),
                 rs.getBigDecimal("loan_amount"),
+                rs.getDate("create_date"),
                 rs.getBigDecimal("interest_rate"),
                 rs.getLong("account_id")
 
@@ -61,6 +63,7 @@ public class Mappers {
         return new SavingsAccount(
 
                 rs.getLong("id"),
+                rs.getDate("create_date"),
                 rs.getBigDecimal("interest_rate"),
                 rs.getBigDecimal("withdrawal_limit"),
                 rs.getLong("account_id")

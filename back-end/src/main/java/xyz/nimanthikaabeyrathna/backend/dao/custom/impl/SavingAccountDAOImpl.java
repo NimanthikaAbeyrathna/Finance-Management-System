@@ -2,10 +2,14 @@ package xyz.nimanthikaabeyrathna.backend.dao.custom.impl;
 
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import xyz.nimanthikaabeyrathna.backend.dao.custom.SavingAccountDAO;
 import xyz.nimanthikaabeyrathna.backend.entity.SavingsAccount;
 
+import java.sql.PreparedStatement;
+import java.sql.Statement;
 import java.util.List;
 import java.util.Optional;
 
@@ -28,15 +32,29 @@ public class SavingAccountDAOImpl implements SavingAccountDAO {
 
     @Override
     public SavingsAccount save(SavingsAccount entity) throws Exception {
-        String sql = "INSERT INTO SavingsAccount (id, interest_rate, withdrawal_limit, account_id) VALUES (?,?,?,?)";
-        jdbcTemplate.update(sql, entity.getId(), entity.getInterestRate(), entity.getWithdrawalLimit(), entity.getAccountId());
+
+        String sql = "INSERT INTO SavingsAccount (create_date, interest_rate, withdrawal_limit, account_id) VALUES (?,?,?,?)";
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        jdbcTemplate.update(connection -> {
+            PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            ps.setDate(1, entity.getCreateDate());
+            ps.setBigDecimal(2,entity.getInterestRate());
+            ps.setBigDecimal(3,entity.getWithdrawalLimit());
+            ps.setLong(4,entity.getAccountId());
+            return ps;
+        },keyHolder );
+
+        Long id = keyHolder.getKey().longValue();
+        entity.setId(id);
         return entity;
+
     }
 
     @Override
     public void update(SavingsAccount entity) throws Exception {
 
-        jdbcTemplate.update("UPDATE SavingsAccount SET interest_rate=?, withdrawal_limit=?, account_id=? WHERE id=?",
+        jdbcTemplate.update("UPDATE SavingsAccount SET create_date=?, interest_rate=?, withdrawal_limit=?, account_id=? WHERE id=?",
+                entity.getCreateDate(),
                 entity.getInterestRate(),
                 entity.getWithdrawalLimit(),
                 entity.getAccountId(),

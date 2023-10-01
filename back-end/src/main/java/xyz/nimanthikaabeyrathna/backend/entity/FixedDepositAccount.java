@@ -16,6 +16,7 @@ public class FixedDepositAccount implements SuperEntity{
 
     private Long id;
     private BigDecimal depositAmount;
+    private Date createDate;
     private Date maturityDate;
     private BigDecimal interestRate;
     private Long accountId;

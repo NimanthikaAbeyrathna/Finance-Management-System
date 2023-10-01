@@ -2,10 +2,14 @@ package xyz.nimanthikaabeyrathna.backend.dao.custom.impl;
 
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import xyz.nimanthikaabeyrathna.backend.dao.custom.AccountDAO;
 import xyz.nimanthikaabeyrathna.backend.entity.Account;
 
+import java.sql.PreparedStatement;
+import java.sql.Statement;
 import java.util.List;
 import java.util.Optional;
 
@@ -28,8 +32,19 @@ public class AccountDAOImpl implements AccountDAO {
 
     @Override
     public Account save(Account entity) throws Exception {
-        String sql = "INSERT INTO Account (id, account_type, balance, user_id) VALUES (?,?,?,?)";
-        jdbcTemplate.update(sql, entity.getId(), entity.getAccountType(), entity.getBalance(), entity.getUserId());
+        String sql = "INSERT INTO Account (account_type, balance, user_id) VALUES (?,?,?)";
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+
+        jdbcTemplate.update(connection -> {
+            PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            ps.setString(1, entity.getAccountType());
+            ps.setBigDecimal(2, entity.getBalance());
+            ps.setLong(3, entity.getUserId());
+            return ps;
+        }, keyHolder);
+
+        Long id = keyHolder.getKey().longValue();
+        entity.setId(id);
         return entity;
 
     }

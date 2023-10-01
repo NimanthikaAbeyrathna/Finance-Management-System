@@ -8,6 +8,7 @@ import xyz.nimanthikaabeyrathna.backend.business.exception.RecordNotFoundExcepti
 import xyz.nimanthikaabeyrathna.backend.business.util.Transformer;
 import xyz.nimanthikaabeyrathna.backend.dao.custom.SavingAccountDAO;
 import xyz.nimanthikaabeyrathna.backend.dto.SavingsAccountDTO;
+import xyz.nimanthikaabeyrathna.backend.entity.LoanAccount;
 import xyz.nimanthikaabeyrathna.backend.entity.SavingsAccount;
 
 import java.util.ArrayList;
@@ -38,12 +39,15 @@ public class SavingAccountBOImpl implements SavingAccountBO {
     }
 
     @Override
-    public void saveSavingsAccount(SavingsAccountDTO savingsAccountDTO) throws Exception {
+    public Long saveSavingsAccount(SavingsAccountDTO savingsAccountDTO) throws Exception {
 
-        if (savingAccountDAO.existsById(savingsAccountDTO.getId())){
-            throw new DuplicateRecordException(savingsAccountDTO.getId()+" already exist");
+        if (savingAccountDAO.existsById(savingsAccountDTO.getId())) {
+            throw new DuplicateRecordException(savingsAccountDTO.getId() + " already exist");
         }
-        savingAccountDAO.save(transformer.toSavingAccountEntity(savingsAccountDTO));
+        SavingsAccount savingsAccount = savingAccountDAO.save(transformer.toSavingAccountEntity(savingsAccountDTO));
+        return savingsAccount.getId();
+
+
     }
 
     @Override
@@ -55,8 +59,8 @@ public class SavingAccountBOImpl implements SavingAccountBO {
     @Override
     public void updateSavingsAccount(SavingsAccountDTO savingsAccountDTO) throws Exception {
 
-        if (!savingAccountDAO.existsById(savingsAccountDTO.getId())){
-            throw new RecordNotFoundException(savingsAccountDTO.getId()+" does not exist");
+        if (!savingAccountDAO.existsById(savingsAccountDTO.getId())) {
+            throw new RecordNotFoundException(savingsAccountDTO.getId() + " does not exist");
         }
         savingAccountDAO.update(transformer.toSavingAccountEntity(savingsAccountDTO));
     }

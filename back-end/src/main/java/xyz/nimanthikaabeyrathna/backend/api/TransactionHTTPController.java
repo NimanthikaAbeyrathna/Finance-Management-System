@@ -29,6 +29,7 @@ public class TransactionHTTPController {
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping(consumes = "application/json")
     public void saveTransaction(@RequestBody TransactionDTO transactionDTO) throws Exception {
+        System.out.println(transactionDTO);
         transactionBO.saveTransaction(transactionDTO);
 
         if ("DEPOSIT".equals(transactionDTO.getTransactionType())) {

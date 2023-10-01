@@ -23,6 +23,9 @@ public class FixedDepositAccountDTO {
     @Positive(message = "Deposit amount must be a positive value")
     private BigDecimal depositAmount;
 
+    @NotNull(message = "Create date is required")
+    private Date createDate;
+
     @NotNull(message = "Maturity date is required")
     private Date maturityDate;
 

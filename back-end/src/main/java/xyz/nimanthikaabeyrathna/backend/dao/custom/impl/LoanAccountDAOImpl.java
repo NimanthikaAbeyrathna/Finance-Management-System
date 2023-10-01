@@ -2,10 +2,15 @@ package xyz.nimanthikaabeyrathna.backend.dao.custom.impl;
 
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import xyz.nimanthikaabeyrathna.backend.dao.custom.LoanAccountDAO;
 import xyz.nimanthikaabeyrathna.backend.entity.LoanAccount;
 
+import java.math.BigDecimal;
+import java.sql.PreparedStatement;
+import java.sql.Statement;
 import java.util.List;
 import java.util.Optional;
 
@@ -28,16 +33,29 @@ public class LoanAccountDAOImpl implements LoanAccountDAO {
 
     @Override
     public LoanAccount save(LoanAccount entity) throws Exception {
-        String sql = "INSERT INTO LoanAccount (id, loan_amount, interest_rate, account_id) VALUES (?,?,?,?)";
-        jdbcTemplate.update(sql, entity.getId(), entity.getLoanAmount(), entity.getInterestRate(), entity.getAccountId());
+        String sql = "INSERT INTO LoanAccount (loan_amount, create_date, interest_rate, account_id) VALUES (?,?,?,?)";
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+
+        jdbcTemplate.update(connection -> {
+            PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            ps.setBigDecimal(1, entity.getLoanAmount());
+            ps.setDate(2, entity.getCreateDate());
+            ps.setBigDecimal(3, entity.getInterestRate());
+            ps.setLong(4, entity.getAccountId());
+            return ps;
+        }, keyHolder);
+
+        Long id = keyHolder.getKey().longValue();
+        entity.setId(id);
         return entity;
     }
 
     @Override
     public void update(LoanAccount entity) throws Exception {
 
-        jdbcTemplate.update("UPDATE LoanAccount SET loan_amount=?, interest_rate=?, account_id=? WHERE id=?",
+        jdbcTemplate.update("UPDATE LoanAccount SET loan_amount=?,create_date=?, interest_rate=?, account_id=? WHERE id=?",
                 entity.getLoanAmount(),
+                entity.getCreateDate(),
                 entity.getInterestRate(),
                 entity.getAccountId(),
                 entity.getId());
@@ -67,4 +85,5 @@ public class LoanAccountDAOImpl implements LoanAccountDAO {
     public boolean existsById(Long pk) throws Exception {
         return findById(pk).isPresent();
     }
+
 }

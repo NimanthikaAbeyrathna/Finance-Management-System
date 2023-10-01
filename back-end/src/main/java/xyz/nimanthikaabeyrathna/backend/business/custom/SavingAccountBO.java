@@ -8,7 +8,7 @@ public interface SavingAccountBO {
 
     List<SavingsAccountDTO> getAllSavingAccounts() throws Exception;
 
-    void saveSavingsAccount(SavingsAccountDTO savingsAccountDTO) throws Exception;
+    Long saveSavingsAccount(SavingsAccountDTO savingsAccountDTO) throws Exception;
 
     void deleteSavingsAccount(Long id) throws Exception;
 

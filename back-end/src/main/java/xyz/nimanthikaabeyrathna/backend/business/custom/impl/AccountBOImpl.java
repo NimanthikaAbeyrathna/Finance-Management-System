@@ -1,5 +1,6 @@
 package xyz.nimanthikaabeyrathna.backend.business.custom.impl;
 
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import xyz.nimanthikaabeyrathna.backend.business.custom.AccountBO;
@@ -12,6 +13,7 @@ import xyz.nimanthikaabeyrathna.backend.entity.Account;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 
 @Service
@@ -20,10 +22,12 @@ public class AccountBOImpl implements AccountBO {
 
     private final AccountDAO accountDAO;
     private final Transformer transformer;
+    private final JdbcTemplate jdbcTemplate;
 
-    public AccountBOImpl(AccountDAO accountDAO, Transformer transformer) {
+    public AccountBOImpl(AccountDAO accountDAO, Transformer transformer, JdbcTemplate jdbcTemplate) {
         this.accountDAO = accountDAO;
         this.transformer = transformer;
+        this.jdbcTemplate = jdbcTemplate;
     }
 
     @Override
@@ -39,12 +43,14 @@ public class AccountBOImpl implements AccountBO {
     }
 
     @Override
-    public void saveAccount(AccountDTO accountDTO) throws Exception {
+    public Long saveAccount(AccountDTO accountDTO) throws Exception {
 
         if (accountDAO.existsById(accountDTO.getId())){
             throw new DuplicateRecordException(accountDTO.getId()+" already exist");
         }
-        accountDAO.save(transformer.toAccountEntity(accountDTO));
+        Account account = accountDAO.save(transformer.toAccountEntity(accountDTO));
+
+        return account.getId();
     }
 
     @Override
@@ -60,5 +66,11 @@ public class AccountBOImpl implements AccountBO {
             throw new RecordNotFoundException(accountDTO.getId()+" does not exist");
         }
         accountDAO.update(transformer.toAccountEntity(accountDTO));
+    }
+
+    @Override
+    public Account findAccount(Long id) throws Exception {
+        Optional<Account> account = accountDAO.findById(id);
+        return account.orElse(null);
     }
 }

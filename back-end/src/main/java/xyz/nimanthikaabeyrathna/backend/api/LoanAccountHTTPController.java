@@ -7,6 +7,7 @@ import xyz.nimanthikaabeyrathna.backend.dto.FixedDepositAccountDTO;
 import xyz.nimanthikaabeyrathna.backend.dto.LoanAccountDTO;
 
 import javax.validation.Valid;
+import java.math.BigDecimal;
 import java.util.List;
 
 @RestController
@@ -28,8 +29,9 @@ public class LoanAccountHTTPController {
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping(consumes = "application/json")
-    public void saveLoanAccount(@RequestBody LoanAccountDTO loanAccountDTO) throws Exception {
-        loanAccountBO.saveLoanAccount(loanAccountDTO);
+    public Long saveLoanAccount(@RequestBody LoanAccountDTO loanAccountDTO) throws Exception {
+        Long generatedId = loanAccountBO.saveLoanAccount(loanAccountDTO);
+        return generatedId;
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
@@ -44,5 +46,14 @@ public class LoanAccountHTTPController {
     public void updateLoanAccount(@PathVariable("id") Long id,
                                         @RequestBody @Valid LoanAccountDTO loanAccountDTO) throws Exception {
         loanAccountBO.updateLoanAccount(loanAccountDTO);
+    }
+
+
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @PatchMapping("/loanrepay/{id}")
+    public void loanRepayment(@PathVariable("id") Long id,
+                              @RequestBody BigDecimal amount)throws Exception{
+        loanAccountBO.loanRepay(id,amount);
+
     }
 }

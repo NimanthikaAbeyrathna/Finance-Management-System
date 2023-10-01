@@ -8,10 +8,12 @@ import xyz.nimanthikaabeyrathna.backend.business.exception.RecordNotFoundExcepti
 import xyz.nimanthikaabeyrathna.backend.business.util.Transformer;
 import xyz.nimanthikaabeyrathna.backend.dao.custom.FixDepositAccountDAO;
 import xyz.nimanthikaabeyrathna.backend.dto.FixedDepositAccountDTO;
+import xyz.nimanthikaabeyrathna.backend.entity.Account;
 import xyz.nimanthikaabeyrathna.backend.entity.FixedDepositAccount;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -38,12 +40,13 @@ public class FixDepositBOImpl implements FixDepositAccountBO {
     }
 
     @Override
-    public void saveFixDepositAccount(FixedDepositAccountDTO fixedDepositAccountDTO) throws Exception {
+    public Long saveFixDepositAccount(FixedDepositAccountDTO fixedDepositAccountDTO) throws Exception {
 
         if (fixDepositAccountDAO.existsById(fixedDepositAccountDTO.getId())){
             throw new DuplicateRecordException(fixedDepositAccountDTO.getId()+" already exist");
         }
-        fixDepositAccountDAO.save(transformer.toFixDepositAccountEntity(fixedDepositAccountDTO));
+       FixedDepositAccount fixedDepositAccount = fixDepositAccountDAO.save(transformer.toFixDepositAccountEntity(fixedDepositAccountDTO));
+        return fixedDepositAccount.getId();
     }
 
     @Override
@@ -59,5 +62,12 @@ public class FixDepositBOImpl implements FixDepositAccountBO {
             throw new RecordNotFoundException(fixedDepositAccountDTO.getId()+" does not exist");
         }
         fixDepositAccountDAO.update(transformer.toFixDepositAccountEntity(fixedDepositAccountDTO));
+    }
+
+    @Override
+    public FixedDepositAccount findAccount(Long id) throws Exception {
+
+        Optional<FixedDepositAccount> fixedDepositAccount = fixDepositAccountDAO.findById(id);
+        return fixedDepositAccount.orElse(null);
     }
 }

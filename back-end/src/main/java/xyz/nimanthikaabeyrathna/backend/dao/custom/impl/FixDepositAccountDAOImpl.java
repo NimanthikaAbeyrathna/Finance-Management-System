@@ -2,10 +2,14 @@ package xyz.nimanthikaabeyrathna.backend.dao.custom.impl;
 
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import xyz.nimanthikaabeyrathna.backend.dao.custom.FixDepositAccountDAO;
 import xyz.nimanthikaabeyrathna.backend.entity.FixedDepositAccount;
 
+import java.sql.PreparedStatement;
+import java.sql.Statement;
 import java.util.List;
 import java.util.Optional;
 
@@ -29,17 +33,29 @@ public class FixDepositAccountDAOImpl implements FixDepositAccountDAO {
 
     @Override
     public FixedDepositAccount save(FixedDepositAccount entity) throws Exception {
-        String sql = "INSERT INTO FixedDepositAccount (id, deposit_amount, maturity_date, interest_rate, account_id) VALUES (?,?,?,?,?)";
-        jdbcTemplate.update(sql, entity.getId(), entity.getDepositAmount(), entity.getMaturityDate(), entity.getInterestRate(),entity.getAccountId());
-        return entity;
+        String sql = "INSERT INTO FixedDepositAccount (deposit_amount, create_date, maturity_date, interest_rate, account_id) VALUES (?,?,?,?,?)";
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        jdbcTemplate.update(connection -> {
+            PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            ps.setBigDecimal(1, entity.getDepositAmount());
+            ps.setDate(2, entity.getCreateDate());
+            ps.setDate(3, entity.getMaturityDate());
+            ps.setBigDecimal(4, entity.getInterestRate());
+            ps.setLong(5, entity.getAccountId());
+            return ps;
+        }, keyHolder);
 
+        Long id = keyHolder.getKey().longValue();
+        entity.setId(id);
+        return entity;
     }
 
     @Override
     public void update(FixedDepositAccount entity) throws Exception {
 
-        jdbcTemplate.update("UPDATE FixedDepositAccount SET deposit_amount=?, maturity_date=?, interest_rate=?, account_id=? WHERE id=?",
+        jdbcTemplate.update("UPDATE FixedDepositAccount SET deposit_amount=?, create_date=?, maturity_date=?, interest_rate=?, account_id=? WHERE id=?",
                 entity.getDepositAmount(),
+                entity.getCreateDate(),
                 entity.getMaturityDate(),
                 entity.getInterestRate(),
                 entity.getAccountId(),

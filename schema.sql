@@ -18,6 +18,7 @@ CREATE TABLE Account (
 CREATE TABLE LoanAccount (
                              id BIGINT AUTO_INCREMENT PRIMARY KEY,
                              loan_amount DECIMAL(10, 2) NOT NULL,
+                             create_date DATE NOT NULL ,
                              interest_rate DECIMAL(10, 2) NOT NULL,
                              account_id BIGINT,
                              FOREIGN KEY (account_id) REFERENCES Account(id)
@@ -27,6 +28,7 @@ CREATE TABLE LoanAccount (
 CREATE TABLE FixedDepositAccount (
                                      id BIGINT AUTO_INCREMENT PRIMARY KEY,
                                      deposit_amount DECIMAL (10, 2) NOT NULL,
+                                     create_date DATE NOT NULL ,
                                      maturity_date DATE NOT NULL,
                                      interest_rate DECIMAL (10, 2) NOT NULL,
                                      account_id BIGINT,
@@ -36,6 +38,7 @@ CREATE TABLE FixedDepositAccount (
 
 CREATE TABLE SavingsAccount (
                                 id BIGINT AUTO_INCREMENT PRIMARY KEY,
+                                create_date DATE NOT NULL ,
                                 interest_rate DECIMAL(10, 2) NOT NULL,
                                 withdrawal_limit DECIMAL(10, 2) NOT NULL,
                                 account_id BIGINT,
@@ -51,4 +54,3 @@ CREATE TABLE Transaction (
                              account_id BIGINT,
                              FOREIGN KEY (account_id) REFERENCES Account(id)
 );
-

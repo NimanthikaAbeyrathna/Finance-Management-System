@@ -1,13 +1,24 @@
 package xyz.nimanthikaabeyrathna.backend.api;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import xyz.nimanthikaabeyrathna.backend.business.custom.FixDepositAccountBO;
 import xyz.nimanthikaabeyrathna.backend.dto.AccountDTO;
 import xyz.nimanthikaabeyrathna.backend.dto.FixedDepositAccountDTO;
+import xyz.nimanthikaabeyrathna.backend.entity.Account;
+import xyz.nimanthikaabeyrathna.backend.entity.FixedDepositAccount;
 
 import javax.validation.Valid;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.sql.Date;
+import java.time.LocalDate;
+import java.time.Period;
+import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @CrossOrigin(origins = "*")
@@ -25,11 +36,39 @@ public class FixDepositAccountHTTPController {
     public List<FixedDepositAccountDTO> getAllFixDepositAccounts() throws Exception {
         return fixDepositAccountBO.getAllFixDepositAccounts();
     }
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getFixDepositAccountDetails(@PathVariable("id") Long id) throws Exception {
+        FixedDepositAccount fixedDepositAccount = fixDepositAccountBO.findAccount(id);
+
+        Calendar calendar = Calendar.getInstance();
+        java.util.Date today = calendar.getTime();
+        Date createDate = fixedDepositAccount.getCreateDate();
+        long millisecondsBetweenDates = today.getTime() - createDate.getTime();
+        BigDecimal daysBetweenDates = new BigDecimal(millisecondsBetweenDates).divide(BigDecimal.valueOf(86400000), 0, RoundingMode.HALF_UP);
+        System.out.println(daysBetweenDates);
+
+
+        BigDecimal rateFraction = fixedDepositAccount.getInterestRate().divide(BigDecimal.valueOf(100));
+        BigDecimal ratePerDay = daysBetweenDates.divide(BigDecimal.valueOf(30), 6, RoundingMode.HALF_UP);
+
+
+        BigDecimal interestEarned = fixedDepositAccount.getDepositAmount().multiply(rateFraction).multiply(ratePerDay).setScale(2, RoundingMode.HALF_UP);
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("maturityDate", fixedDepositAccount.getMaturityDate());
+        response.put("interestEarned", interestEarned);
+
+        return ResponseEntity.ok(response);
+    }
+
+
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping(consumes = "application/json")
-    public void saveFixDepositAccount(@RequestBody FixedDepositAccountDTO fixedDepositAccountDTO) throws Exception {
-        fixDepositAccountBO.saveFixDepositAccount(fixedDepositAccountDTO);
+    public Long saveFixDepositAccount(@RequestBody FixedDepositAccountDTO fixedDepositAccountDTO) throws Exception {
+        Long generatedId = fixDepositAccountBO.saveFixDepositAccount(fixedDepositAccountDTO);
+        return generatedId;
+
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)

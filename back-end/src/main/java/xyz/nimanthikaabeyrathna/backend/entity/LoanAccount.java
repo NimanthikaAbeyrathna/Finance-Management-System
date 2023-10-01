@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.sql.Date;
 
 @Data
 @AllArgsConstructor
@@ -15,6 +16,7 @@ public class LoanAccount implements SuperEntity{
 
     private Long id;
     private BigDecimal loanAmount;
+    private Date createDate;
     private BigDecimal interestRate;
     private Long accountId;
 

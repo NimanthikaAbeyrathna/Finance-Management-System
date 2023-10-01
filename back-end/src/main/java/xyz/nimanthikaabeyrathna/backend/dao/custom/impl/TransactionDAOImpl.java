@@ -28,8 +28,8 @@ public class TransactionDAOImpl implements TransactionDAO {
 
     @Override
     public Transaction save(Transaction entity) throws Exception {
-        String sql = "INSERT INTO Transaction (id, transaction_type, amount, timestamp, account_id) VALUES (?,?,?,?,?)";
-        jdbcTemplate.update(sql,entity.getId(), entity.getTransactionType(), entity.getAmount(), entity.getTimestamp(), entity.getAccountId());
+        String sql = "INSERT INTO Transaction (transaction_type, amount, timestamp, account_id) VALUES (?,?,?,?)";
+        jdbcTemplate.update(sql,entity.getTransactionType(), entity.getAmount(), entity.getTimestamp(), entity.getAccountId());
         return entity;
     }
 
@@ -37,6 +37,7 @@ public class TransactionDAOImpl implements TransactionDAO {
     public void update(Transaction entity) throws Exception {
 
         jdbcTemplate.update("UPDATE Transaction SET transaction_type=?, amount=?, timestamp=?, account_id=? WHERE id=?",
+
                 entity.getTransactionType(),
                 entity.getAmount(),
                 entity.getTimestamp(),

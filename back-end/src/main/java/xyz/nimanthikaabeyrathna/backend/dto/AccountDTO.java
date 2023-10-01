@@ -25,7 +25,7 @@ public class AccountDTO {
     @NotBlank(message = "Account type is required")
     private String accountType;
 
-    @PositiveOrZero(message = "Balance must be a positive or zero value")
+
     private BigDecimal balance;
 
     @NotNull(message = "Owner is required")
