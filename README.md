@@ -132,5 +132,5 @@ To run the Finance Management System locally, follow these steps:
 ## Contact
 
 contact [Nimanthika Abeyrathna] at [nimanthikaabeyrathna@gmail.com].
-
+github repository [https://github.com/NimanthikaAbeyrathna/Finance-Management-System]
 
